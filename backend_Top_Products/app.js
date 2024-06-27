@@ -8,7 +8,7 @@ const fetchProductData = require("./controllers/fetchProductData.js")
 
 app.use(express.json());
 
-app.get("/categories/:categoryname/products", async (req, res) => {
+app.get("companies/:companyName/categories/:categoryname/products", async (req, res) => {
   const { categoryname } = req.params;
   const {
     n,
@@ -17,7 +17,6 @@ app.get("/categories/:categoryname/products", async (req, res) => {
     order = "asc",
     minPrice,
     maxPrice,
-    company,
   } = req.query;
 
   if (!n || isNaN(n) || n <= 0) {
@@ -26,7 +25,7 @@ app.get("/categories/:categoryname/products", async (req, res) => {
 
   try {
     const products = await fetchProductData(
-      company,
+        companyName,
       categoryname,
       minPrice,
       maxPrice,
