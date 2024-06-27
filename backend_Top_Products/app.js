@@ -12,7 +12,7 @@ app.use(express.json());
 app.get(
   "/companies/:companyName/categories/:categoryname/products",
   async (req, res) => {
-    const { categoryname ,companyName} = req.params;
+    const { categoryname ,companyname} = req.params;
     const {
       top,
       page = 1,
@@ -27,13 +27,20 @@ app.get(
     }
 
     try {
+
+      
       const products = await fetchProductData(
-        companyName,
+        companyname,
         categoryname,
         minPrice,
         maxPrice,
         top
       );
+
+      console.log(products)
+
+
+      
       //   sorting by field - sort_by
       if (sort_by) {
         products.sort((a, b) => {
