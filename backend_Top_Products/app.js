@@ -31,7 +31,7 @@ app.get("companies/:companyName/categories/:categoryname/products", async (req, 
       maxPrice,
       n
     );
-
+//   sorting by field - sort_by
     if (sort_by) {
       products.sort((a, b) => {
         if (order === "asc") {
