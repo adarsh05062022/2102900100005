@@ -1,59 +1,62 @@
 const express = require("express");
 const axios = require("axios");
 const app = express();
+const cors = require("cors");
 
 const PORT = 4000;
 
-const fetchProductData = require("./controllers/fetchProductData.js")
-
+const fetchProductData = require("./controllers/fetchProductData.js");
+app.use(cors());
 app.use(express.json());
 
-app.get("companies/:companyName/categories/:categoryname/products", async (req, res) => {
-  const { categoryname } = req.params;
-  const {
-    n,
-    page = 1,
-    sort_by,
-    order = "asc",
-    minPrice,
-    maxPrice,
-  } = req.query;
-
-  if (!n || isNaN(n) || n <= 0) {
-    return res.status(400).json({ message: 'Invalid "n" parameter' });
-  }
-
-  try {
-    const products = await fetchProductData(
-        companyName,
-      categoryname,
+app.get(
+  "/companies/:companyName/categories/:categoryname/products",
+  async (req, res) => {
+    const { categoryname ,companyName} = req.params;
+    const {
+      top,
+      page = 1,
+      sort_by,
+      order = "asc",
       minPrice,
       maxPrice,
-      n
-    );
-//   sorting by field - sort_by
-    if (sort_by) {
-      products.sort((a, b) => {
-        if (order === "asc") {
-          return a[sort_by] > b[sort_by] ? 1 : -1;
-        } else {
-          return a[sort_by] < b[sort_by] ? 1 : -1;
-        }
-      });
+    } = req.query;
+
+    if (!top || top <= 0) {
+      return res.status(400).json({ message: 'Invalid "n" parameter' });
     }
 
-    // to get the n number of products per page
+    try {
+      const products = await fetchProductData(
+        companyName,
+        categoryname,
+        minPrice,
+        maxPrice,
+        top
+      );
+      //   sorting by field - sort_by
+      if (sort_by) {
+        products.sort((a, b) => {
+          if (order === "asc") {
+            return a[sort_by] > b[sort_by] ? 1 : -1;
+          } else {
+            return a[sort_by] < b[sort_by] ? 1 : -1;
+          }
+        });
+      }
 
+      // to get the n number of products per page
 
-    const startIndex = (page - 1) * n; // getting the starting index from the products should start
+      const startIndex = (page - 1) * top; // getting the starting index from the products should start
 
-    const perPageProducts = products.slice(startIndex, startIndex + n);
+      const perPageProducts = products.slice(startIndex, startIndex + top);
 
-    res.status(200).json(perPageProducts);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch products" });
+      res.status(200).json(perPageProducts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
   }
-});
+);
 
 // for /categories/:categoryname/products/:productid endpoint
 app.get("/categories/:categoryname/products/:productid", async (req, res) => {
