@@ -6,7 +6,7 @@ const severApi = "http://20.244.56/144/test";
 // function to fetch the data from the api
 
 async function fetchProductData(company, category, minPrice, maxPrice, top) {
- console.log("hello")
+
     try {
       const response = await axios.get(
         `${severApi}/companies/${company}/categories/${category}/products`,
